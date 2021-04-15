@@ -6,18 +6,20 @@ function ask(questionText) {
     rl.question(questionText, resolve);
   });
 }
+//Global counter to keep track of guesses
+let count = 1;
 //This goes straight into a function that makes you choose which game you want to play with a simple if else and await ask.
 selectGame();
-async function selectGame(){
-let answer =  await ask("In this program you can have the computer guess a number you're thinking of, or you can guess a number that the computer has thought of. \nIf you want to have the computer guess your number, press (1). \nIf you want to guess the computer's number, press (2): ");
-  if (answer === "1"){
+async function selectGame() {
+  let answer = await ask(
+    "In this program you can have the computer guess a number you're thinking of, or you can guess a number that the computer has thought of. \nIf you want to have the computer guess your number, press (1). \nIf you want to guess the computer's number, press (2): "
+  );
+  if (answer === "1") {
     start();
-  } else if (answer === "2"){
+  } else if (answer === "2") {
     startTwo();
   }
-
 }
-
 
 // Game 1 -- Computer guesses human number
 
@@ -38,10 +40,14 @@ async function start() {
     let range = userMax - min + 1;
     return min + Math.floor(range / 2); // returns a number halfway between the guess and the minimum or maximum, based on the guess
   }
-  // Computer guesses at random
+  // Computer guesses at random, adds a count to the guess
   guessNum = randomInt(min, userMax);
+  //Adds a count for every subsequent guess
+  count++;
   // Computer makes first guess. If correct, the program exits.
   let firstAsk = await ask("is your number " + guessNum + " (y/n) ");
+  //Adds a count for the first guess
+  count++;
   if (firstAsk === "y" || firstAsk === "yes") {
     console.log("Congrats!");
     process.exit();
@@ -68,11 +74,18 @@ async function start() {
     //victory condition
     if (firstAsk === "y" || firstAsk === "yes") {
       console.log("Congrats!");
+      //Adds the count at the end
+      count++;
+      console.log(`It took the computer ${count} guesses`);
+
       process.exit();
     }
   } while (guessNum != secretNumber);
+  {
+  }
 
   console.log("");
+
   process.exit();
 }
 
@@ -91,26 +104,30 @@ async function startTwo() {
   //Sets an adjustable range as a variable
   let userMax = await ask("Choose the highest number in the range: ");
   let secretNumber = randomInt(min, userMax);
-//After having chosen a number, asks you for your first guess
+  //After having chosen a number, asks you for your first guess
   guessNum = await ask(
     "Excellent. I've chosen a number. What do you think it is? "
   );
   //Victory condition
   if (guessNum == secretNumber) {
     console.log("Correct!");
+    console.log(`It took you ${count} guess`);
     process.exit();
   }
-  //Do/while loop that makes you guess again until the victory condition is met
+  // Do/while loop that makes you guess again until the victory condition is met
   do {
     if (guessNum < secretNumber) {
       console.log("Wrong! the number is higher ");
+      count++; //Adds a count for the number of guesses
     }
     if (guessNum > secretNumber) {
       console.log("Wrong! the number is lower ");
+      count++; //Adds a count for the number of guesses
     }
     guessNum = await ask("Guess again: ");
     if (guessNum == secretNumber) {
       console.log("Correct!");
+      console.log(`It took you ${count} guesses`);
       process.exit();
     }
   } while (guessNum != secretNumber);
